@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Produk</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body class="bg-gray-100 p-6">
+
+  <div class="max-w-4xl mx-auto bg-white shadow-md rounded p-6">
+    <h1 class="text-2xl font-bold mb-4">Daftar Produk</h1>
+
+    <!-- Form Tambah / Edit -->
+    <form id="produkForm" class="mb-6">
+      <input type="hidden" id="produkId">
+      <div class="grid grid-cols-3 gap-4">
+        <input type="text" id="nama" placeholder="Nama" class="border rounded p-2 w-full">
+        <input type="number" id="harga" placeholder="Harga" class="border rounded p-2 w-full">
+        <input type="number" id="stok" placeholder="Stok" class="border rounded p-2 w-full">
+      </div>
+      <div class="mt-4">
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Simpan</button>
+        <button type="button" id="resetBtn" class="bg-gray-500 text-white px-4 py-2 rounded">Reset</button>
+      </div>
+    </form>
+
+    <!-- Tabel Produk -->
+    <table class="w-full border">
+      <thead>
+        <tr class="bg-gray-200">
+          <th class="border px-2 py-1">ID</th>
+          <th class="border px-2 py-1">Nama</th>
+          <th class="border px-2 py-1">Harga</th>
+          <th class="border px-2 py-1">Stok</th>
+          <th class="border px-2 py-1">Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="produkTable">
+        <% produk.forEach(p => { %>
+          <tr>
+            <td class="border px-2 py-1"><%= p.id %></td>
+            <td class="border px-2 py-1"><%= p.nama %></td>
+            <td class="border px-2 py-1"><%= p.harga %></td>
+            <td class="border px-2 py-1"><%= p.stok %></td>
+            <td class="border px-2 py-1 space-x-2">
+              <button onclick="editProduk(<%= p.id %>, '<%= p.nama %>', <%= p.harga %>, <%= p.stok %>)" class="bg-yellow-500 text-white px-2 py-1 rounded">Edit</button>
+              <button onclick="deleteProduk(<%= p.id %>)" class="bg-red-500 text-white px-2 py-1 rounded">Hapus</button>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    const API_URL = "/api/produk";
+
+    const tableBody = document.getElementById("produkTable");
+    const form = document.getElementById("produkForm");
+    const resetBtn = document.getElementById("resetBtn");
+
+    // Tambah / Edit Produk
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const id = document.getElementById("produkId").value;
+      const nama = document.getElementById("nama").value;
+      const harga = document.getElementById("harga").value;
+      const stok = document.getElementById("stok").value;
+
+      if (id) {
+        await axios.put(`${API_URL}/${id}`, { nama, harga, stok });
+      } else {
+        await axios.post(API_URL, { nama, harga, stok });
+      }
+
+      location.reload();
+    });
+
+    // Edit
+    function editProduk(id, nama, harga, stok) {
+      document.getElementById("produkId").value = id;
+      document.getElementById("nama").value = nama;
+      document.getElementById("harga").value = harga;
+      document.getElementById("stok").value = stok;
+    }
+
+    // Hapus
+    async function deleteProduk(id) {
+      if (confirm("Yakin hapus produk ini?")) {
+        await axios.delete(`${API_URL}/${id}`);
+        location.reload();
+      }
+    }
+
+    // Reset
+    function resetForm() {
+      document.getElementById("produkId").value = "";
+      document.getElementById("nama").value = "";
+      document.getElementById("harga").value = "";
+      document.getElementById("stok").value = "";
+    }
+    resetBtn.addEventListener("click", resetForm);
+  </script>
+</body>
+</html>
