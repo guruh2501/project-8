@@ -25,6 +25,15 @@
       </div>
     </form>
 
+
+<!-- Form Search -->
+<form id="formSearch" class="mb-4 grid grid-cols-2 gap-4">
+  <input type="number" id="searchStokMax" placeholder="Stok Maksimal" class="border rounded p-2 w-full">
+  <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Cari</button>
+</form>
+
+
+
     <!-- Tabel Produk -->
     <table class="w-full border">
       <thead>
@@ -101,6 +110,39 @@
       document.getElementById("stok").value = "";
     }
     resetBtn.addEventListener("click", resetForm);
+
+
+   // Form Search
+document.getElementById("formSearch").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const stokMax = document.getElementById("searchStokMax").value;
+
+  let url = `${API_URL}/search?`;
+  if(stokMax) url += `stokMax=${encodeURIComponent(stokMax)}`;
+
+  const res = await axios.get(url);
+  const produk = res.data;
+
+  const tableBody = document.getElementById("produkTable");
+  tableBody.innerHTML = "";
+  produk.forEach(p => {
+    tableBody.innerHTML += `
+      <tr>
+        <td class="border px-2 py-1">${p.id}</td>
+        <td class="border px-2 py-1">${p.nama}</td>
+        <td class="border px-2 py-1">${p.harga}</td>
+        <td class="border px-2 py-1">${p.stok}</td>
+        <td class="border px-2 py-1 space-x-2">
+          <button onclick="editProduk(${p.id}, '${p.nama}', ${p.harga}, ${p.stok})" class="bg-yellow-500 text-white px-2 py-1 rounded">Edit</button>
+          <button onclick="deleteProduk(${p.id})" class="bg-red-500 text-white px-2 py-1 rounded">Hapus</button>
+        </td>
+      </tr>`;
+  });
+});
+
+
+
+
   </script>
 </body>
 </html>

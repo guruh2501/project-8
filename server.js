@@ -4,8 +4,10 @@ const sequelize = require("./config/db");
 const produkRoutes = require("./routes/produkRoutes");
 const axios = require("axios");
 
+
 const app = express();
 app.use(bodyParser.json());
+
 
 // Setting EJS
 app.set("view engine", "ejs");
